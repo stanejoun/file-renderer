@@ -5,7 +5,7 @@ namespace Stanejoun\FileRenderer;
 class RendererSettings
 {
 	const HTML_CONTENT_MODE = 'content';
-	const URL_MODE = 'content';
+	const URL_MODE = 'url';
 
 	private ?int $top = null;
 	private ?int $left = null;
