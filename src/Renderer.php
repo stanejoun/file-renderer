@@ -39,7 +39,7 @@ class Renderer
 		if (!empty($tmpFiles)) {
 			foreach ($tmpFiles as $tmpFile) {
 				$filename = __DIR__ . '/../tmp/' . $tmpFile;
-				if (is_file($filename) && time() - filemtime($filename) > 10) {
+				if (!str_ends_with($filename, 'gitignore') && is_file($filename) && time() - filemtime($filename) > 10) {
 					unlink($filename);
 				}
 			}
