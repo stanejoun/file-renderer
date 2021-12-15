@@ -8,7 +8,7 @@ class Renderer
 {
 	private static function GetFilename(string $extension): string
 	{
-		return __DIR__ . '/../tmp/' . date('Y-m-d') . '_' . time() . '_' . uniqid() . '.' . $extension;
+		return __DIR__ . '/../tmp/' . date('Ymd') . '-' . time() . '-' . uniqid() . '.' . $extension;
 	}
 
 	private static function Execute(string $target, string $extension, RendererSettings $settings): string
