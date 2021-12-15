@@ -17,9 +17,9 @@ class Renderer
 		$temporaryOutputFilename = self::GetFilename($extension);
 		if ((bool)filter_var($target, FILTER_VALIDATE_URL) === false) {
 			$target = base64_encode($target);
-			$settings->mode = RendererSettings::HTML_CONTENT_MODE;
+			$settings->setMode(RendererSettings::HTML_CONTENT_MODE);
 		} else {
-			$settings->mode = RendererSettings::URL_MODE;
+			$settings->setMode(RendererSettings::URL_MODE);
 		}
 		$phantomJs = __DIR__ . '/../bin/phantomjs';
 		$snapshotJs = __DIR__ . '/snapshot.js';
