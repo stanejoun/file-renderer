@@ -15,7 +15,7 @@ class Renderer
 	{
 		self::DeleteExpiredTempFiles();
 		$temporaryOutputFilename = self::GetFilename($extension);
-		if ((bool)filter_var($target, FILTER_VALIDATE_URL) === false) {
+		if (str_starts_with($target, 'http') || str_starts_with($target, 'www')) {
 			$target = base64_encode($target);
 			$settings->setMode(RendererSettings::HTML_CONTENT_MODE);
 		} else {
