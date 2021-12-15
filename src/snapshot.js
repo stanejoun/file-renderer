@@ -6,6 +6,7 @@ var output = '';
 var extension = '';
 var pageWidth = 0;
 var pageHeight = 0;
+var isHtmlContentMode = false;
 
 if (system.args.length < 4 || system.args.length > 4) {
 	console.log('Usage: snapshot.js target_URL output_filename [parameters]');
@@ -39,8 +40,9 @@ if (system.args.length < 4 || system.args.length > 4) {
 				args[argument[0]] = argument[1];
 			}
 		}
-		if (args.isContent) {
-			page.setContent(decodeURIComponent(escape(window.atob(target))), 'http://localhost');
+		isHtmlContentMode = (args && typeof args.mode !== 'undefined' && args.mode === 'content');
+		if (isHtmlContentMode) {
+			page.setContent(atob(target));
 		}
 		// PhantomJs default DPI = 120
 		// cm * dpi / 2,54 = px
@@ -97,25 +99,29 @@ if (system.args.length < 4 || system.args.length > 4) {
 		if (settings.zoomFactor) {
 			page.zoomFactor = settings.zoomFactor;
 		}
-		if (/^https?:\/\/[^\r\n]+$/.test(target)) {
+		if (isHtmlContentMode) {
+			page.render(output);
+			clearTimeout(expirationTime);
+			phantom.exit(1);
+		} else {
 			page.open(target, function (status) {
 				if (status !== 'success') {
 					console.log('Unable to load the url: "' + target + '".');
 					phantom.exit(1);
 				}
 			});
-		}
-		page.onLoadFinished = function (status) {
-			if (status === 'success') {
-				window.setTimeout(function () {
-					page.render(output);
-					clearTimeout(expirationTime);
+			page.onLoadFinished = function (status) {
+				if (status === 'success') {
+					window.setTimeout(function () {
+						page.render(output);
+						clearTimeout(expirationTime);
+						phantom.exit(1);
+					}, 3000);
+				} else {
 					phantom.exit(1);
-				}, 3000);
-			} else {
-				phantom.exit(1);
-			}
-		};
+				}
+			};
+		}
 	} catch (error) {
 		console.log('PhantomJs error: ' + error);
 		clearTimeout(expirationTime);

@@ -4,21 +4,24 @@ namespace Stanejoun\FileRenderer;
 
 class RendererSettings
 {
-	private ?int $_top = null;
-	private ?int $_left = null;
-	private ?int $_width = null;
-	private ?int $_height = null;
-	private ?string $_pdfWidth = null; // 21cm
-	private ?string $_pdfHeight = null; // 29.7cm
-	private ?string $_pageFormat = null; // A4
-	private ?string $_orientation = null; // portrait
-	private ?int $_zoomFactor = null;
-	private ?int $_isContent = null;
+	const HTML_CONTENT_MODE = 'content';
+	const URL_MODE = 'content';
+
+	private ?int $top = null;
+	private ?int $left = null;
+	private ?int $width = null;
+	private ?int $height = null;
+	private ?string $pdfWidth = null; // 21cm
+	private ?string $pdfHeight = null; // 29.7cm
+	private ?string $pageFormat = null; // A4
+	private ?string $orientation = null; // portrait
+	private ?int $zoomFactor = null;
+	private ?string $mode = null;
 
 	public function toArray(): array
 	{
 		$array = [];
-		$properties = ['_top', '_left', '_width', '_height', '_pdfWidth', '_pdfHeight', '_pageFormat', '_orientation', '_zoomFactor', '_isContent'];
+		$properties = ['top', 'left', 'width', 'height', 'pdfWidth', 'pdfHeight', 'pageFormat', 'orientation', 'zoomFactor', 'mode'];
 		foreach ($properties as $property) {
 			if (!empty($this->{$property})) {
 				$array[$property] = $this->{$property};
@@ -27,113 +30,113 @@ class RendererSettings
 		return $array;
 	}
 
-	public function top(?int $top): RendererSettings
-	{
-		$this->_top = $top;
-		return $this;
-	}
-
-	public function left(?int $left): RendererSettings
-	{
-		$this->_left = $left;
-		return $this;
-	}
-
-	public function width(?int $width): RendererSettings
-	{
-		$this->_width = $width;
-		return $this;
-	}
-
-	public function height(?int $height): RendererSettings
-	{
-		$this->_height = $height;
-		return $this;
-	}
-
-	public function pdfWidth(?string $pdfWidth): RendererSettings
-	{
-		$this->_pdfWidth = $pdfWidth;
-		return $this;
-	}
-
-	public function pdfHeight(?string $pdfHeight): RendererSettings
-	{
-		$this->_pdfHeight = $pdfHeight;
-		return $this;
-	}
-
-	public function pageFormat(?string $pageFormat): RendererSettings
-	{
-		$this->_pageFormat = $pageFormat;
-		return $this;
-	}
-
-	public function orientation(?string $orientation): RendererSettings
-	{
-		$this->_orientation = $orientation;
-		return $this;
-	}
-
-	public function zoomFactor(?int $zoomFactor): RendererSettings
-	{
-		$this->_zoomFactor = $zoomFactor;
-		return $this;
-	}
-
-	public function isContent(?int $isContent): RendererSettings
-	{
-		$this->_isContent = $isContent;
-		return $this;
-	}
-
 	public function getTop(): ?int
 	{
-		return $this->_top;
+		return $this->top;
+	}
+
+	public function setTop(?int $top): RendererSettings
+	{
+		$this->top = $top;
+		return $this;
 	}
 
 	public function getLeft(): ?int
 	{
-		return $this->_left;
+		return $this->left;
+	}
+
+	public function setLeft(?int $left): RendererSettings
+	{
+		$this->left = $left;
+		return $this;
 	}
 
 	public function getWidth(): ?int
 	{
-		return $this->_width;
+		return $this->width;
+	}
+
+	public function setWidth(?int $width): RendererSettings
+	{
+		$this->width = $width;
+		return $this;
 	}
 
 	public function getHeight(): ?int
 	{
-		return $this->_height;
+		return $this->height;
+	}
+
+	public function setHeight(?int $height): RendererSettings
+	{
+		$this->height = $height;
+		return $this;
 	}
 
 	public function getPdfWidth(): ?string
 	{
-		return $this->_pdfWidth;
+		return $this->pdfWidth;
+	}
+
+	public function setPdfWidth(?string $pdfWidth): RendererSettings
+	{
+		$this->pdfWidth = $pdfWidth;
+		return $this;
 	}
 
 	public function getPdfHeight(): ?string
 	{
-		return $this->_pdfHeight;
+		return $this->pdfHeight;
+	}
+
+	public function setPdfHeight(?string $pdfHeight): RendererSettings
+	{
+		$this->pdfHeight = $pdfHeight;
+		return $this;
 	}
 
 	public function getPageFormat(): ?string
 	{
-		return $this->_pageFormat;
+		return $this->pageFormat;
+	}
+
+	public function setPageFormat(?string $pageFormat): RendererSettings
+	{
+		$this->pageFormat = $pageFormat;
+		return $this;
 	}
 
 	public function getOrientation(): ?string
 	{
-		return $this->_orientation;
+		return $this->orientation;
+	}
+
+	public function setOrientation(?string $orientation): RendererSettings
+	{
+		$this->orientation = $orientation;
+		return $this;
 	}
 
 	public function getZoomFactor(): ?int
 	{
-		return $this->_zoomFactor;
+		return $this->zoomFactor;
 	}
 
-	public function getIsContent(): ?int
+	public function setZoomFactor(?int $zoomFactor): RendererSettings
 	{
-		return $this->_isContent;
+		$this->zoomFactor = $zoomFactor;
+		return $this;
+	}
+
+	public function getMode(): ?int
+	{
+		return $this->mode;
+	}
+
+	public function setMode(?int $mode): RendererSettings
+	{
+		$this->mode = $mode;
+		return $this;
 	}
 }
