@@ -33,16 +33,14 @@ if (system.args.length < 4 || system.args.length > 4) {
 			phantom.exit(1);
 		}
 		var args = {};
-		if (system.args[3]) {
-			var systemArgs = system.args[3].split(',');
-			for (var key in systemArgs) {
-				var argument = systemArgs[key].split('=');
-				args[argument[0]] = argument[1];
-			}
+		var systemArgs = system.args[3].split(',');
+		for (var key in systemArgs) {
+			var argument = systemArgs[key].split('=');
+			args[argument[0]] = argument[1];
 		}
-		isHtmlContentMode = (args && typeof args.mode !== 'undefined' && args.mode === 'content');
+		isHtmlContentMode = (typeof args.mode !== 'undefined' && args.mode === 'content');
 		if (isHtmlContentMode) {
-			page.setContent(atob(target));
+			page.setContent(atob(target), 'http://localhost');
 		}
 		// PhantomJs default DPI = 120
 		// cm * dpi / 2,54 = px
