@@ -40,7 +40,7 @@ if (system.args.length < 4 || system.args.length > 4) {
 		}
 		isHtmlContentMode = (typeof args.mode !== 'undefined' && args.mode === 'content');
 		if (isHtmlContentMode) {
-			page.setContent(atob(target), 'http://localhost');
+			page.setContent(atob(target), 'mock');
 		}
 		// PhantomJs default DPI = 120
 		// cm * dpi / 2,54 = px

@@ -16,10 +16,10 @@ class Renderer
 		self::DeleteExpiredTempFiles();
 		$temporaryOutputFilename = self::GetFilename($extension);
 		if (str_starts_with($target, 'http') || str_starts_with($target, 'www')) {
+			$settings->setMode(RendererSettings::URL_MODE);
+		} else {
 			$target = base64_encode($target);
 			$settings->setMode(RendererSettings::HTML_CONTENT_MODE);
-		} else {
-			$settings->setMode(RendererSettings::URL_MODE);
 		}
 		$phantomJs = __DIR__ . '/../bin/phantomjs';
 		$snapshotJs = __DIR__ . '/snapshot.js';
