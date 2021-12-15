@@ -129,12 +129,12 @@ class RendererSettings
 		return $this;
 	}
 
-	public function getMode(): ?int
+	public function getMode(): ?string
 	{
 		return $this->mode;
 	}
 
-	public function setMode(?int $mode): RendererSettings
+	public function setMode(?string $mode): RendererSettings
 	{
 		$this->mode = $mode;
 		return $this;
