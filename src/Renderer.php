@@ -8,7 +8,7 @@ class Renderer
 {
 	private static function GetFilename(string $extension): string
 	{
-		return __DIR__ . '../tmp/' . date('Y-m-d') . '_' . time() . '_' . uniqid() . '.' . $extension;
+		return __DIR__ . '/../tmp/' . date('Y-m-d') . '_' . time() . '_' . uniqid() . '.' . $extension;
 	}
 
 	private static function Execute(string $target, string $extension, RendererSettings $settings): string
@@ -19,7 +19,7 @@ class Renderer
 			$target = base64_encode($target);
 			$settings->isContent = 1;
 		}
-		$phantomJs = __DIR__ . '../bin/phantomjs';
+		$phantomJs = __DIR__ . '/../bin/phantomjs';
 		$snapshotJs = __DIR__ . 'snapshot.js';
 		$arguments = http_build_query($settings->toArray(), '', ',');
 		$output = null;
@@ -33,10 +33,10 @@ class Renderer
 
 	public static function DeleteExpiredTempFiles(): void
 	{
-		$tmpFiles = scandir(__DIR__ . '../tmp');
+		$tmpFiles = scandir(__DIR__ . '/../tmp');
 		if (!empty($tmpFiles)) {
 			foreach ($tmpFiles as $tmpFile) {
-				$filename = __DIR__ . '../tmp/' . $tmpFile;
+				$filename = __DIR__ . '/../tmp/' . $tmpFile;
 				if (is_file($filename) && time() - filemtime($filename) > 10) {
 					unlink($filename);
 				}
