@@ -10,7 +10,7 @@ class RendererSettings
 	private ?int $_height = null;
 	private ?string $_pdfWidth = null; // 21cm
 	private ?string $_pdfHeight = null; // 29.7cm
-	private ?int $_pageFormat = null; // A4
+	private ?string $_pageFormat = null; // A4
 	private ?string $_orientation = null; // portrait
 	private ?int $_zoomFactor = null;
 	private ?int $_isContent = null;
@@ -63,7 +63,7 @@ class RendererSettings
 		return $this;
 	}
 
-	public function pageFormat(?int $pageFormat): RendererSettings
+	public function pageFormat(?string $pageFormat): RendererSettings
 	{
 		$this->_pageFormat = $pageFormat;
 		return $this;
@@ -117,7 +117,7 @@ class RendererSettings
 		return $this->_pdfHeight;
 	}
 
-	public function getPageFormat(): ?int
+	public function getPageFormat(): ?string
 	{
 		return $this->_pageFormat;
 	}
