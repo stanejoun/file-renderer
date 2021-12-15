@@ -118,6 +118,6 @@ class Renderer
 	 */
 	public static function HTML(string $target, RendererSettings $settings): string
 	{
-		return self::Execute($target, 'pdf', $settings);
+		return '';
 	}
 }
