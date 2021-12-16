@@ -123,6 +123,7 @@ if (system.args.length < 4 || system.args.length > 4) {
 			page.open(target, function (status) {
 				if (status !== 'success') {
 					console.log('Unable to load the url: "' + target + '".');
+					clearTimeout(expirationTime);
 					phantom.exit(1);
 				}
 			});
