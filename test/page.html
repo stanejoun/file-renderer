@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<title>Test pdf</title>
+		<style>
+			/**
+			 Format A3 portrait 120 DPI = 1403px 1984px
+			 Format A3 landscape 120 DPI = 1984px 1403px
+
+			 Format A4 portrait 120 DPI = 992px 1403px
+			 Format A4 landscape 120 DPI = 1403px 992px
+
+			 Format A5 portrait 120 DPI = 699px 992px
+			 Format A5 landscape 120 DPI = 992px 699px
+
+			 Format Letter portrait 120 DPI = 1020px 1318px
+			 Format Letter landscape 120 DPI = 1318px 1020px
+
+			 Format Tabloid portrait 120 DPI = 1322px 2031px
+			 Format Tabloid landscape 120 DPI = 2031px 1322px
+			 */
+			body {
+				position: relative;
+				display: block;
+				height: 100%;
+				margin: 0 auto;
+				padding: 0;
+				background: #ffffff;
+			}
+
+			.body-a4-portrait {
+				width: 992px;
+				min-width: 992px;
+				max-width: 992px;
+			}
+
+			.page {
+				position: relative;
+				display: block;
+				page-break-after: always;
+				box-sizing: border-box;
+				padding: 10px;
+				-moz-box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+				border: 30px solid #000000;
+			}
+
+			.page-a4-portrait {
+				width: 992px;
+				min-width: 992px;
+				max-width: 992px;
+				height: 1403px;
+				min-height: 1403px;
+				max-height: 1403px;
+			}
+
+			.page-content {
+				position: relative;
+				font-family: Arial, Helvetica, sans-serif;
+			}
+
+			.bgColor1 {
+				background-color: palevioletred;
+			}
+
+			.bgColor2 {
+				background-color: pink;
+			}
+
+			.bgColor3 {
+				background-color: deeppink;
+			}
+
+		</style>
+	</head>
+	<body class="body-a4-portrait">
+		<div class="page page-a4-portrait bgColor1">
+			<div class="page-content">
+
+			</div>
+		</div>
+
+		<div class="page page-a4-portrait bgColor2">
+			<div class="page-content">
+
+			</div>
+		</div>
+
+		<div class="page page-a4-portrait bgColor3">
+			<div class="page-content">
+
+			</div>
+		</div>
+	</body>
+</html>
