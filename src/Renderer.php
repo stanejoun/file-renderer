@@ -3,23 +3,29 @@
 namespace Stanejoun\FileRenderer;
 
 use Exception;
+use Stanejoun\FileRenderer\Setting\CommonSettings;
+use Stanejoun\FileRenderer\Setting\ImageSettings;
+use Stanejoun\FileRenderer\Setting\PdfSettings;
 
 class Renderer
 {
 	private static function GetFilename(string $extension): string
 	{
-		return __DIR__ . '/../tmp/' . date('Ymd') . '-' . time() . '-' . uniqid() . '.' . $extension;
+		return __DIR__ . '/../tmp/' . date('Ymd-His') . '-' . uniqid() . '.' . $extension;
 	}
 
-	private static function Execute(string $target, string $extension, RendererSettings $settings): string
+	private static function Execute(string $target, string $extension, ?CommonSettings $settings = null): string
 	{
-		self::DeleteExpiredTempFiles();
+		self::DeleteTmpFiles();
+		if ($settings === null) {
+			$settings = new CommonSettings();
+		}
 		$temporaryOutputFilename = self::GetFilename($extension);
 		if (str_starts_with($target, 'http') || str_starts_with($target, 'www')) {
-			$settings->setMode(RendererSettings::URL_MODE);
+			$settings->setMode(CommonSettings::URL_MODE);
 		} else {
 			$target = base64_encode($target);
-			$settings->setMode(RendererSettings::HTML_CONTENT_MODE);
+			$settings->setMode(CommonSettings::HTML_CONTENT_MODE);
 		}
 		$phantomJs = __DIR__ . '/../bin/phantomjs';
 		$snapshotJs = __DIR__ . '/snapshot.js';
@@ -33,7 +39,7 @@ class Renderer
 		return $temporaryOutputFilename;
 	}
 
-	public static function DeleteExpiredTempFiles(): void
+	public static function DeleteTmpFiles(): void
 	{
 		$tmpFiles = scandir(__DIR__ . '/../tmp');
 		if (!empty($tmpFiles)) {
@@ -48,78 +54,84 @@ class Renderer
 
 	/**
 	 * @param string $target url|html content
-	 * @param RendererSettings $settings
+	 * @param PdfSettings|null $settings
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function PDF(string $target, RendererSettings $settings): string
+	public static function PDF(string $target, ?PdfSettings $settings = null): string
 	{
 		return self::Execute($target, 'pdf', $settings);
 	}
 
 	/**
 	 * @param string $target url|html content
-	 * @param RendererSettings $settings
+	 * @param ImageSettings|null $settings
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function PNG(string $target, RendererSettings $settings): string
+	public static function PNG(string $target, ?ImageSettings $settings = null): string
 	{
 		return self::Execute($target, 'png', $settings);
 	}
 
 	/**
 	 * @param string $target url|html content
-	 * @param RendererSettings $settings
+	 * @param ImageSettings|null $settings
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function JPG(string $target, RendererSettings $settings): string
+	public static function JPG(string $target, ?ImageSettings $settings = null): string
 	{
 		return self::Execute($target, 'jpg', $settings);
 	}
 
 	/**
 	 * @param string $target url|html content
-	 * @param RendererSettings $settings
+	 * @param ImageSettings|null $settings
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function BMP(string $target, RendererSettings $settings): string
+	public static function BMP(string $target, ?ImageSettings $settings = null): string
 	{
 		return self::Execute($target, 'bmp', $settings);
 	}
 
 	/**
 	 * @param string $target url|html content
-	 * @param RendererSettings $settings
+	 * @param ImageSettings|null $settings
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function PPM(string $target, RendererSettings $settings): string
+	public static function PPM(string $target, ?ImageSettings $settings = null): string
 	{
 		return self::Execute($target, 'ppm', $settings);
 	}
 
 	/**
 	 * @param string $target url|html content
-	 * @param RendererSettings $settings
+	 * @param ImageSettings|null $settings
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function GIF(string $target, RendererSettings $settings): string
+	public static function GIF(string $target, ?ImageSettings $settings = null): string
 	{
 		return self::Execute($target, 'gif', $settings);
 	}
 
 	/**
 	 * @param string $target url|html content
-	 * @param RendererSettings $settings
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function HTML(string $target, RendererSettings $settings): string
+	public static function HTML(string $target): string
 	{
-		return '';
+		if (str_starts_with($target, 'http') || str_starts_with($target, 'www')) {
+			$content = file_get_contents($target);
+		} else {
+			$content = $target;
+		}
+		$filename = self::GetFilename('html');
+		file_put_contents($filename, $content);
+		return $filename;
 	}
 }

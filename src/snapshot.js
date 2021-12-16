@@ -4,8 +4,8 @@ var system = require('system');
 var target = '';
 var output = '';
 var extension = '';
-var pageWidth = 0;
-var pageHeight = 0;
+var pageWidth = null;
+var pageHeight = null;
 var isHtmlContentMode = false;
 
 if (system.args.length < 4 || system.args.length > 4) {
@@ -48,24 +48,39 @@ if (system.args.length < 4 || system.args.length > 4) {
 		var settings = {
 			top: (args.top) ? args.top : '0',
 			left: (args.left) ? args.left : '0',
-			width: (args.width) ? args.width : null, // 992px
-			height: (args.height) ? args.height : null, // 1403px
-			pdfWidth: (args.pdfWidth) ? args.pdfWidth : null, // 21cm
-			pdfHeight: (args.pdfHeight) ? args.pdfHeight : null, // 29.7cm
-			format: (args.pageFormat) ? args.pageFormat : 'A4', // Supported formats are: 'A3', 'A4', 'A5', 'Legal', 'Letter', 'Tabloid'.
+			width: (args.width) ? args.width : null, // 992px | 21cm
+			height: (args.height) ? args.height : null, // 1403px | 29.7cm
+			format: (args.pageFormat) ? args.pageFormat : null, // Supported formats are: 'A3', 'A4', 'A5', 'Legal', 'Letter', 'Tabloid'.
 			orientation: (args.orientation) ? args.orientation : 'portrait', // Orientation ('portrait', 'landscape') is optional and defaults to 'portrait'.
 			zoomFactor: (args.zoomFactor) ? args.zoomFactor : '1'
 		};
 		if (extension === 'pdf') {
-			if (settings.pdfWidth && settings.pdfHeight) {
+			if (settings.width && settings.height) {
 				page.paperSize = {
-					width: settings.pdfWidth, // Must be a value in units of cm
-					height: settings.pdfHeight // Must be a value in units of cm
+					width: settings.width, // Must be a value in units of cm
+					height: settings.height // Must be a value in units of cm
 				};
-			} else {
+			} else if (settings.format) {
 				page.paperSize = {
 					format: settings.format, // A3, A4, A5, Legal, Letter, Tabloid
 					orientation: settings.orientation, // portrait, landscape
+				};
+			} else {
+				pageWidth = page.evaluate(function () {
+					return document.querySelector('body').scrollWidth;
+				});
+				pageHeight = page.evaluate(function () {
+					return document.querySelector('body').scrollHeight;
+				});
+				pageWidth = parseInt(pageWidth, 10);
+				pageHeight = parseInt(pageHeight, 10);
+				page.viewportSize = {
+					width: pageWidth,
+					height: pageHeight
+				};
+				page.paperSize = {
+					width: (String)((pageWidth / 120) * 2.54) + 'cm', // Must be a value in units of cm
+					height: (String)((pageHeight / 120) * 2.54) + 'cm' // Must be a value in units of cm
 				};
 			}
 		} else {
@@ -84,13 +99,32 @@ if (system.args.length < 4 || system.args.length > 4) {
 				};
 			} else if (settings.width) {
 				pageWidth = parseInt(settings.width, 10);
+				pageHeight = page.evaluate(function () {
+					return document.querySelector('body').scrollHeight;
+				});
 				page.viewportSize = {
-					width: pageWidth
+					width: pageWidth,
+					height: parseInt(pageHeight, 10)
 				};
 			} else if (settings.height) {
+				pageWidth = page.evaluate(function () {
+					return document.querySelector('body').scrollWidth;
+				});
 				pageHeight = parseInt(settings.height, 10);
 				page.viewportSize = {
+					width: parseInt(pageWidth, 10),
 					height: pageHeight
+				};
+			} else {
+				pageWidth = page.evaluate(function () {
+					return document.querySelector('body').scrollWidth;
+				});
+				pageHeight = page.evaluate(function () {
+					return document.querySelector('body').scrollHeight;
+				});
+				page.viewportSize = {
+					width: parseInt(pageWidth, 10),
+					height: parseInt(pageHeight, 10)
 				};
 			}
 		}
