@@ -72,23 +72,21 @@ if (system.args.length < 4 || system.args.length > 4) {
 					pageHeight = pixelToCm(settings.height); // Must be a value in units of cm
 				} else if (settings.width) {
 					pageWidth = pixelToCm(settings.width);
-				} else if (settings.height) {
-					pageHeight = pixelToCm(settings.height);
-				}
-				if (!pageWidth) {
-					pageWidth = pixelToCm(page.evaluate(function () {
-						return document.querySelector('body').scrollWidth;
-					}));
-				}
-				if (!pageHeight) {
 					pageHeight = pixelToCm(page.evaluate(function () {
 						return document.querySelector('body').scrollHeight;
 					}));
+				} else if (settings.height) {
+					pageWidth = pixelToCm(page.evaluate(function () {
+						return document.querySelector('body').scrollWidth;
+					}));
+					pageHeight = pixelToCm(settings.height);
 				}
-				page.paperSize = {
-					width: pageWidth, // Must be a value in units of cm
-					height: pageHeight // Must be a value in units of cm
-				};
+				if (pageWidth && pageHeight) {
+					page.paperSize = {
+						width: pageWidth, // Must be a value in units of cm
+						height: pageHeight // Must be a value in units of cm
+					};
+				}
 			}
 		} else {
 			if (settings.width && settings.height) {

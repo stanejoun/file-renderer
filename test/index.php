@@ -15,7 +15,10 @@ if (!empty($_GET)) {
 			if (isset($parameters['page'])) {
 				$tempFilename = Stanejoun\FileRenderer\Renderer::PDF('https://www.google.com/');
 			} else {
-				$tempFilename = Stanejoun\FileRenderer\Renderer::PDF($html);
+				$tempFilename = Stanejoun\FileRenderer\Renderer::PDF($html, (new \Stanejoun\FileRenderer\Setting\PdfSettings())
+					->setPageFormat('A4')
+					->setOrientation('portrait')
+				);
 			}
 		}
 		if ($parameters['export'] === 'png') {
