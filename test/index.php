@@ -10,23 +10,50 @@ if (!empty($_GET)) {
 	unset($_GET);
 	if (isset($parameters['export'])) {
 		$tempFilename = null;
-		$html = file_get_contents(__DIR__ . '/page.html');
+		$param = null;
+		$target = (isset($parameters['content']) && $parameters['content'] == 1) ? file_get_contents('http://filerenderer/page.html') : 'http://filerenderer/page.html';
 		if ($parameters['export'] === 'pdf') {
-			if (isset($parameters['page'])) {
-				$tempFilename = Stanejoun\FileRenderer\Renderer::PDF('https://www.google.com/');
-			} else {
-				$tempFilename = Stanejoun\FileRenderer\Renderer::PDF($html, (new \Stanejoun\FileRenderer\Setting\PdfSettings())
-					->setPageFormat('A4')
-					->setOrientation('portrait')
-				);
+			if (isset($parameters['param'])) {
+				if ($parameters['param'] == 0) {
+					$param = (new \Stanejoun\FileRenderer\Setting\PdfSettings())
+						->setPageFormat('[A4]');
+				}
+				if ($parameters['param'] == 1) {
+					$param = (new \Stanejoun\FileRenderer\Setting\PdfSettings())
+						->setWidth(900)
+						->setHeight(1300);
+				}
+				if ($parameters['param'] == 2) {
+					$param = (new \Stanejoun\FileRenderer\Setting\PdfSettings())
+						->setWidth(992);
+				}
+				if ($parameters['param'] == 3) {
+					$param = (new \Stanejoun\FileRenderer\Setting\PdfSettings())
+						->setHeight(888);
+				}
 			}
+			$tempFilename = Stanejoun\FileRenderer\Renderer::PDF($target, $param);
 		}
 		if ($parameters['export'] === 'png') {
-			if (isset($parameters['page'])) {
-				$tempFilename = Stanejoun\FileRenderer\Renderer::PNG('https://www.google.com/');
-			} else {
-				$tempFilename = Stanejoun\FileRenderer\Renderer::PNG($html);
+			if (isset($parameters['param'])) {
+				if ($parameters['param'] == 1) {
+					$param = (new \Stanejoun\FileRenderer\Setting\ImageSettings())
+						->setWidth(720)
+						->setHeight(950);
+				}
+				if ($parameters['param'] == 2) {
+					$param = (new \Stanejoun\FileRenderer\Setting\ImageSettings())
+						->setWidth(653);
+				}
+				if ($parameters['param'] == 3) {
+					$param = (new \Stanejoun\FileRenderer\Setting\ImageSettings())
+						->setHeight(830);
+				}
 			}
+			$tempFilename = Stanejoun\FileRenderer\Renderer::PNG($target, $param);
+		}
+		if ($parameters['export'] === 'html') {
+			$tempFilename = Stanejoun\FileRenderer\Renderer::HTML($target);
 		}
 		if ($tempFilename) {
 			header('Content-Description: File Transfer');
@@ -40,30 +67,53 @@ if (!empty($_GET)) {
 			header('Pragma: public');
 			header('Content-Length: ' . filesize($tempFilename));
 			readfile($tempFilename);
+			exit;
 		}
 	}
 }
 ?>
-
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-	<title>File renderer test</title>
-</head>
-<body>
-<div>
-	<ul>
-		<li><a href="page.html" target="_blank">Page 1</a></li>
-		<li><a href="https://www.google.com/" target="_blank">www.google.com</a></li>
-	</ul>
-</div>
-<div>
-	<ul>
-		<li><a href="index.php?export=pdf">Exporter la page 1 au format PDF</a></li>
-		<li><a href="index.php?export=png">Exporter la page 1 au format PNG</a></li>
-		<li><a href="index.php?export=pdf&page=php">Exporter la page www.google.com au format PDF</a></li>
-		<li><a href="index.php?export=png&page=php">Exporter la page www.google.com au format PNG</a></li>
-	</ul>
-</div>
-</body>
+<html lang="en">
+	<head>
+		<title>File renderer test</title>
+	</head>
+	<body>
+		<div>
+			<ul>
+				<li><a href="page.html" target="_blank">Page</a></li>
+			</ul>
+		</div>
+		<div>
+			<ul>
+				<li><a href="index.php?content=1&export=pdf&param=0">Export page to PDF [A4] by content</a></li>
+				<li><a href="index.php?content=1&export=pdf&param=1">Export page to PDF [width*height] by content</a></li>
+				<li><a href="index.php?content=1&export=pdf&param=2">Export page to PDF [width] by content</a></li>
+				<li><a href="index.php?content=1&export=pdf&param=3">Export page to PDF [height] by content</a></li>
+				<li><a href="index.php?content=1&export=pdf&param=4">Export page to PDF [null] by content</a></li>
+			</ul>
+			<ul>
+				<li><a href="index.php?content=0&export=pdf&param=0">Export page to PDF [A4] by url</a></li>
+				<li><a href="index.php?content=0&export=pdf&param=1">Export page to PDF [width*height] by url</a></li>
+				<li><a href="index.php?content=0&export=pdf&param=2">Export page to PDF [width] by url</a></li>
+				<li><a href="index.php?content=0&export=pdf&param=3">Export page to PDF [height] by url</a></li>
+				<li><a href="index.php?content=0&export=pdf&param=4">Export page to PDF [null] by url</a></li>
+			</ul>
+			<ul>
+				<li><a href="index.php?content=1&export=png&param=1">Export page to PNG [width*height] by content</a></li>
+				<li><a href="index.php?content=1&export=png&param=2">Export page to PNG [width] by content</a></li>
+				<li><a href="index.php?content=1&export=png&param=3">Export page to PNG [height] by content</a></li>
+				<li><a href="index.php?content=1&export=png&param=4">Export page to PNG [null] by content</a></li>
+			</ul>
+			<ul>
+				<li><a href="index.php?content=0&export=png&param=1">Export page to PNG [width*height] by url</a></li>
+				<li><a href="index.php?content=0&export=png&param=2">Export page to PNG [width] by url</a></li>
+				<li><a href="index.php?content=0&export=png&param=3">Export page to PNG [height] by url</a></li>
+				<li><a href="index.php?content=0&export=png&param=4">Export page to PNG [null] by url</a></li>
+			</ul>
+			<ul>
+				<li><a href="index.php?content=1&export=html">Export page to HTML by content</a></li>
+				<li><a href="index.php?content=0&export=html">Export page to HTML by url</a></li>
+			</ul>
+		</div>
+	</body>
 </html>

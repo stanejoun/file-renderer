@@ -34,7 +34,7 @@ class Renderer
 		$status = null;
 		exec("$phantomJs $snapshotJs $target $temporaryOutputFilename $arguments", $output, $status);
 		if ($status !== 1) {
-			throw new Exception('Error code: ' . $status . '; error: ' . json_encode($output));
+			throw new Exception('Error code: ' . $status . '; Error: ' . json_encode($output));
 		}
 		return $temporaryOutputFilename;
 	}
@@ -125,6 +125,7 @@ class Renderer
 	 */
 	public static function HTML(string $target): string
 	{
+		self::DeleteTmpFiles();
 		if (str_starts_with($target, 'http') || str_starts_with($target, 'www')) {
 			$content = file_get_contents($target);
 		} else {
