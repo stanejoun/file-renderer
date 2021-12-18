@@ -9,12 +9,7 @@ use Stanejoun\FileRenderer\Setting\PdfSettings;
 
 class Renderer
 {
-	private static function GetFilename(string $extension): string
-	{
-		return __DIR__ . '/../tmp/' . date('Ymd-His') . '-' . uniqid() . '.' . $extension;
-	}
-
-	private static function Execute(string $target, string $extension, ?CommonSettings $settings = null): string
+	private static function Execute(string $target, string $extension, ?CommonSettings $settings = null): RendererResult
 	{
 		self::DeleteTmpFiles();
 		if ($settings === null) {
@@ -36,7 +31,24 @@ class Renderer
 		if ($status !== 1) {
 			throw new Exception('Error code: ' . $status . '; Error: ' . json_encode($output));
 		}
-		return $temporaryOutputFilename;
+		$stream = file_get_contents($temporaryOutputFilename);
+		$rendererResult = new RendererResult($stream, basename($temporaryOutputFilename), $extension, filesize($temporaryOutputFilename));
+		self::DeleteTmpFile($temporaryOutputFilename);
+		self::DeleteTmpFiles();
+		return $rendererResult;
+	}
+
+	public static function Download(RendererResult $rendererResult): void
+	{
+		header('Content-Description: File Transfer');
+		header('Content-Type: application/octet-stream');
+		header('Content-Disposition: attachment; filename="' . $rendererResult->filename . '"');
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate');
+		header('Pragma: public');
+		header('Content-Length: ' . $rendererResult->filesize);
+		echo $rendererResult->stream;
+		exit;
 	}
 
 	public static function DeleteTmpFiles(): void
@@ -45,11 +57,23 @@ class Renderer
 		if (!empty($tmpFiles)) {
 			foreach ($tmpFiles as $tmpFile) {
 				$filename = __DIR__ . '/../tmp/' . $tmpFile;
-				if (!str_ends_with($filename, 'gitignore') && is_file($filename) && time() - filemtime($filename) > 10) {
-					unlink($filename);
+				if (time() - filemtime($filename) > 5) {
+					self::DeleteTmpFile($filename);
 				}
 			}
 		}
+	}
+
+	public static function DeleteTmpFile(string $filename): void
+	{
+		if (!str_ends_with($filename, 'gitignore') && is_file($filename)) {
+			unlink($filename);
+		}
+	}
+
+	public static function GetFilename(string $extension): string
+	{
+		return __DIR__ . '/../tmp/' . date('Ymd-His') . '-' . uniqid() . '.' . $extension;
 	}
 
 	/**
@@ -58,7 +82,7 @@ class Renderer
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function PDF(string $target, ?PdfSettings $settings = null): string
+	public static function PDF(string $target, ?PdfSettings $settings = null): RendererResult
 	{
 		return self::Execute($target, 'pdf', $settings);
 	}
@@ -69,7 +93,7 @@ class Renderer
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function PNG(string $target, ?ImageSettings $settings = null): string
+	public static function PNG(string $target, ?ImageSettings $settings = null): RendererResult
 	{
 		return self::Execute($target, 'png', $settings);
 	}
@@ -80,7 +104,7 @@ class Renderer
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function JPG(string $target, ?ImageSettings $settings = null): string
+	public static function JPG(string $target, ?ImageSettings $settings = null): RendererResult
 	{
 		return self::Execute($target, 'jpg', $settings);
 	}
@@ -91,7 +115,7 @@ class Renderer
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function BMP(string $target, ?ImageSettings $settings = null): string
+	public static function BMP(string $target, ?ImageSettings $settings = null): RendererResult
 	{
 		return self::Execute($target, 'bmp', $settings);
 	}
@@ -102,7 +126,7 @@ class Renderer
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function PPM(string $target, ?ImageSettings $settings = null): string
+	public static function PPM(string $target, ?ImageSettings $settings = null): RendererResult
 	{
 		return self::Execute($target, 'ppm', $settings);
 	}
@@ -113,7 +137,7 @@ class Renderer
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function GIF(string $target, ?ImageSettings $settings = null): string
+	public static function GIF(string $target, ?ImageSettings $settings = null): RendererResult
 	{
 		return self::Execute($target, 'gif', $settings);
 	}
@@ -123,7 +147,7 @@ class Renderer
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function HTML(string $target): string
+	public static function HTML(string $target): RendererResult
 	{
 		self::DeleteTmpFiles();
 		if (str_starts_with($target, 'http') || str_starts_with($target, 'www')) {
@@ -132,7 +156,6 @@ class Renderer
 			$content = $target;
 		}
 		$filename = self::GetFilename('html');
-		file_put_contents($filename, $content);
-		return $filename;
+		return new RendererResult($content, basename($filename), 'html', strlen($content));
 	}
 }

@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/../src/Renderer.php');
+require_once(__DIR__ . '/../src/RendererResult.php');
 require_once(__DIR__ . '/../src/Setting/CommonSettings.php');
 require_once(__DIR__ . '/../src/Setting/ImageSettings.php');
 require_once(__DIR__ . '/../src/Setting/PdfSettings.php');
@@ -9,7 +10,7 @@ if (!empty($_GET)) {
 	$parameters = $_GET;
 	unset($_GET);
 	if (isset($parameters['export'])) {
-		$tempFilename = null;
+		$rendererResult = null;
 		$param = null;
 		$target = (isset($parameters['content']) && $parameters['content'] == 1) ? file_get_contents('http://filerenderer/page.html') : 'http://filerenderer/page.html';
 		if ($parameters['export'] === 'pdf') {
@@ -25,14 +26,14 @@ if (!empty($_GET)) {
 				}
 				if ($parameters['param'] == 2) {
 					$param = (new \Stanejoun\FileRenderer\Setting\PdfSettings())
-						->setWidth(992);
+						->setWidth(882);
 				}
 				if ($parameters['param'] == 3) {
 					$param = (new \Stanejoun\FileRenderer\Setting\PdfSettings())
 						->setHeight(888);
 				}
 			}
-			$tempFilename = Stanejoun\FileRenderer\Renderer::PDF($target, $param);
+			$rendererResult = Stanejoun\FileRenderer\Renderer::PDF($target, $param);
 		}
 		if ($parameters['export'] === 'png') {
 			if (isset($parameters['param'])) {
@@ -50,24 +51,13 @@ if (!empty($_GET)) {
 						->setHeight(830);
 				}
 			}
-			$tempFilename = Stanejoun\FileRenderer\Renderer::PNG($target, $param);
+			$rendererResult = Stanejoun\FileRenderer\Renderer::PNG($target, $param);
 		}
 		if ($parameters['export'] === 'html') {
-			$tempFilename = Stanejoun\FileRenderer\Renderer::HTML($target);
+			$rendererResult = Stanejoun\FileRenderer\Renderer::HTML($target);
 		}
-		if ($tempFilename) {
-			header('Content-Description: File Transfer');
-			header('Content-Disposition: inline; filename="' . $tempFilename . '"');
-			header('Content-Type: application/force-download');
-			header('Content-Disposition: attachment; filename=' . basename($tempFilename));
-			header('Content-Transfer-Encoding: binary');
-			header('Expires: 0');
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-			header('Cache-Control: private, must-revalidate, post-check=0, pre-check=0, max-age=1');
-			header('Pragma: public');
-			header('Content-Length: ' . filesize($tempFilename));
-			readfile($tempFilename);
-			exit;
+		if ($rendererResult) {
+			\Stanejoun\FileRenderer\Renderer::Download($rendererResult);
 		}
 	}
 }
